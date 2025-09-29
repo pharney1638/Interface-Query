@@ -1,0 +1,146 @@
+SELECT
+
+  NodeCaption AS [Device Name],
+
+  AgentIP AS [Device IP],
+
+       COUNT(
+
+            CASE WHEN n.Interfaces.AdminStatus = 'Up' 
+
+            THEN 1 ELSE NULL END
+
+            ) 
+
+                 AS [Admin Up],
+       COUNT(
+
+            CASE WHEN n.Interfaces.AdminStatus = 'Down' 
+
+            THEN 1 ELSE NULL END
+
+            ) 
+
+                 AS [Admin Down],
+
+       COUNT(
+
+            CASE WHEN n.Interfaces.OperStatus = 'UP' 
+
+            THEN 1 ELSE NULL END
+
+            ) 
+
+                 AS [Oper Up],
+
+
+       COUNT(
+
+            CASE WHEN n.Interfaces.OperStatus = 'Down' 
+
+            THEN 1 ELSE NULL END
+
+            ) 
+
+                 AS [Oper Down],
+
+       COUNT(
+
+            n.Interfaces.AdminStatus
+
+            ) 
+
+                 AS [Total]
+				 
+
+
+FROM 
+
+  NCM.Nodes n
+
+WHERE
+
+  n.Interfaces.PhysicalInterface = 'Y'
+  AND (
+		(
+         (n.MachineType LIKE '%C9300-48%' OR
+          n.MachineType LIKE '%WS-C3850-48%' OR
+          n.MachineType LIKE '%WS-C3650-48%')
+         AND (n.Interfaces.InterfaceName LIKE 'Gi%/0/%' OR n.Interfaces.InterfaceName LIKE 'GigabitEthernet%/0/%')
+         AND n.Interfaces.InterfaceName NOT LIKE '%/49'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/50'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/51'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/52'
+       )
+	   OR
+	   (
+         n.MachineType LIKE '%C9300L-24P-4X%'
+         AND (n.Interfaces.InterfaceName LIKE 'Gi%/0/%' OR n.Interfaces.InterfaceName LIKE 'GigabitEthernet%/0/%')
+         AND n.Interfaces.InterfaceName NOT LIKE '%/25'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/26'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/27'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/28'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/29'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/30'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/31'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/32'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/33'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/34'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/35'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/36'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/37'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/38'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/39'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/40'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/41'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/42'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/43'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/44'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/45'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/46'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/47'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/48'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/49'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/50'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/51'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/52'
+       )
+
+       OR
+	    (
+         n.MachineType LIKE '%WS-C2960L-16PS-LL%'
+         AND (n.Interfaces.InterfaceName LIKE 'Gi%/0/%' OR n.Interfaces.InterfaceName LIKE 'GigabitEthernet%/0/%')
+         AND n.Interfaces.InterfaceName NOT LIKE '%/17'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/18'
+       )
+
+       OR
+	   (
+         n.MachineType LIKE '%C9300X-24Y%'
+         AND 1 = 0   -- intentionally exclude
+       )
+
+       OR
+	   (
+         (n.Interfaces.InterfaceName LIKE 'Gi%' OR n.Interfaces.InterfaceName LIKE 'GigabitEthernet%')
+         AND n.Interfaces.InterfaceName NOT LIKE 'Gi0/%'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/49'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/50'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/51'
+         AND n.Interfaces.InterfaceName NOT LIKE '%/52'
+       )
+  )
+	
+  AND NodeCaption NOT IN (
+       'CWHC-Core-SW.scahc.local',
+       'SCMAIN-EDGE-RTR-01.scahc.local',
+       'SCMAIN-VOIP-RTR-01.scahc.local'
+  )
+
+GROUP BY
+
+  NodeCaption, AgentIP
+
+ORDER BY
+
+  NodeCaption
